@@ -24,6 +24,8 @@ USER namedays
 EXPOSE 8000/tcp
 
 CMD ["/usr/local/bin/gunicorn", \
+     "--access-logfile", "-", \
+     "--error-logfile", "-", \
      "--no-control-socket", \
      "--bind", "0.0.0.0:8000", \
      "--workers", "4", "namedays:api"]
