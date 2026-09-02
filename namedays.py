@@ -1,9 +1,9 @@
 import functools
-import httpx
 import json
 import logging
-
 from datetime import datetime
+
+import httpx
 from flask import Flask, abort, jsonify
 from werkzeug.exceptions import HTTPException
 
@@ -56,13 +56,14 @@ def fetch_data(query):
 @api.route("/", defaults={"isodate": None}, methods=["GET"])
 @api.route("/<isodate>", methods=["GET"])
 def handler(isodate):
+    tz = datetime.now().astimezone().tzinfo
     if isodate is None:
-        isodate = datetime.now()
+        isodate = datetime.now(tz)
     else:
         try:
-            isodate = datetime.strptime(isodate, "%Y-%m-%d")
+            isodate = datetime.strptime(isodate, "%Y-%m-%d").replace(tzinfo=tz)
         except ValueError:
-            api.logger.warning("Invalid date {}".format(repr(isodate)))
+            api.logger.warning(f"Invalid date {isodate!r}")
             abort(400)
     return jsonify(fetch_data(isodate))
 
