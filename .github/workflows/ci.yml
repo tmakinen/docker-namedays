@@ -33,3 +33,36 @@ jobs:
         run: ruff check
       - name: Run ruff format
         run: ruff format --check
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    needs:
+      - ruff
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Build Docker image
+        run: docker build -t namedays:latest .
+      - name: Start container
+        run: docker run --rm -d --name namedays -p 8000:8000 namedays:latest
+      - name: Wait for container to start
+        run: |
+          for _ in $(seq 1 10) ; do
+              if curl -sSf http://127.0.0.1:8000 ; then
+                  exit 0
+              else
+                  sleep 1
+              fi
+          done
+          echo "Max retries exceeded while waiting for container to come up"
+          exit 1
+      - name: Run tests
+        run: python3 test_api.py
+      - name: Stop container
+        if: always()
+        run: |
+          docker stop namedays
