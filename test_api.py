@@ -22,11 +22,20 @@ def fetch_api(base_url, endpoint):
 def verify_success_payload(data):
     """Validates presence and structural accuracy of grocery hours data."""
     assert data is not None, "Expected JSON response body, got None"
-    keys = ["hevonen", "historiallinen", "kissa", "koira", "ortod", "ruotsi", "suomi"]
+    keys = [
+        "hevonen",
+        "historiallinen",
+        "kissa",
+        "koira",
+        "ortod",
+        "ruotsi",
+        "saame",
+        "suomi",
+    ]
     for k in keys:
         assert k in data, f"Missing required '{k}' key in payload: {data}"
     for k in data:
-        assert k not in keys, f"Unknown '{k}' key in payload: {data}"
+        assert k in keys, f"Unknown key '{k}' in payload: {data}"
 
 
 def test_api_routes(base_url):
