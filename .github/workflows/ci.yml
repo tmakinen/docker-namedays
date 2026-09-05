@@ -22,8 +22,8 @@ jobs:
         with:
           python-version-file: ".python-version"
       - name: Install python dependencies
-        run: pip3 install ruff
+        run: pip3 install -c requirements-dev.txt ruff
       - name: Run ruff check
-        run: ruff check namedays.py
+        run: ruff check
       - name: Run ruff format
-        run: ruff format --check namedays.py
+        run: ruff format --check
